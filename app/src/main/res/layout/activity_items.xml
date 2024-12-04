@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="#5CDB95"
+    tools:context=".ItemsActivity"
+    android:padding="16dp">
+
+    <!-- Верхняя панель -->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:padding="8dp">-->
+
+<!--        <ImageView-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="40dp"-->
+
+<!--            android:layout_gravity="end"-->
+<!--            android:contentDescription="@string/profile" />-->
+<!--    </LinearLayout>-->
+
+    <!-- Центральная часть с кнопками -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingVertical="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/button_previous_group"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/baseline_arrow_left_24"/>
+<!--                android:contentDescription="@string/previous_group" -->
+
+            <TextView
+                android:id="@+id/text_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ИП244"
+                android:textSize="18sp"
+                android:paddingHorizontal="16dp"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/button_next_group"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/baseline_arrow_right_24"/>
+<!--                android:contentDescription="@string/next_group" -->
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="8dp">
+
+            <Button
+                android:id="@+id/button_previous_day"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/baseline_arrow_left_24"/>
+<!--                android:contentDescription="@string/previous_day" -->
+
+            <TextView
+                android:id="@+id/text_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Пн"
+                android:textSize="18sp"
+                android:paddingHorizontal="16dp"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/button_next_day"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/baseline_arrow_right_24"/>
+<!--                android:contentDescription="@string/next_day" -->
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Таблица расписания -->
+    <TableLayout
+        android:id="@+id/table_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1"
+        android:background="#379683"
+        android:padding="8dp">
+
+        <!-- Строка заголовков -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="#edf5e1"
+                android:layout_height="wrap_content"
+                android:text="Время"
+                android:padding="8dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="#edf5e1"
+                android:layout_height="wrap_content"
+                android:text="Пара"
+                android:padding="8dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="#edf5e1"
+                android:layout_height="wrap_content"
+                android:text="Преподаватель(-и)"
+                android:padding="8dp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <!-- Пример строки с расписанием -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="#edf5e1"
+                android:layout_height="wrap_content"
+                android:text="9.10-10.10"
+                android:padding="8dp" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:textColor="#edf5e1"
+                android:layout_height="wrap_content"
+                android:text="Мдк 03"
+                android:padding="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="#edf5e1"
+                android:layout_height="wrap_content"
+                android:text="Петров И.И."
+                android:padding="8dp" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
