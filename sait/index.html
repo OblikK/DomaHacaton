@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <span class="navbar-brand">Расписание</span>
+        <div class="d-flex">
+            <button id="registerButton" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#registerModal">Регистрация</button>
+            <button id="logout" class="btn btn-danger">Выйти</button>
+        </div>
+    </div>
+</nav>
+
+<!-- Модальное окно авторизации -->
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="authModalLabel">Авторизация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="authForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Имя пользователя</label>
+                        <input type="text" class="form-control" id="username" placeholder="Введите логин" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" placeholder="Введите пароль" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно регистрации -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Регистрация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerUsername" class="form-label">Имя пользователя</label>
+                        <input type="text" class="form-control" id="registerUsername" placeholder="Введите имя" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="registerPassword" placeholder="Введите пароль" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerRole" class="form-label">Роль</label>
+                        <select id="registerRole" class="form-select" required>
+                            <option value="guest">Гость</option>
+                            <option value="teacher">Преподаватель</option>
+                            <option value="student">Студент</option>
+                            <option value="dispatcher">Диспетчер</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Массив для хранения пользователей
+    const users = [];
+
+    // Авторизация
+    document.getElementById('authForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        // Проверка пользователя
+        const user = users.find(user => user.username === username && user.password === password);
+        if (!user) {
+            alert('Неверное имя пользователя или пароль.');
+            return;
+        }
+
+        // Сохранение данных авторизации
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        alert(`Добро пожаловать, ${user.username}! Ваша роль: ${user.role}`);
+
+        // Закрытие модального окна
+        const authModal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
+        authModal.hide();
+
+        updateUIForRole(user.role);
+    });
+
+    // Регистрация
+    document.getElementById('registerForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById('registerUsername').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
+        const role = document.getElementById('registerRole').value;
+
+        // Проверка уникальности имени пользователя
+        const userExists = users.some(user => user.username === username);
+        if (userExists) {
+            alert('Имя пользователя уже занято. Выберите другое.');
+            return;
+        }
+
+        // Сохранение пользователя
+        users.push({ username, password, role });
+        alert(`Пользователь ${username} зарегистрирован!`);
+
+        // Закрытие модального окна
+        const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+        registerModal.hide();
+
+        // Открыть авторизацию
+        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+        authModal.show();
+    });
+
+    // Выход
+    document.getElementById('logout').addEventListener('click', function () {
+        localStorage.removeItem('currentUser');
+        alert('Вы вышли из учетной записи.');
+        location.reload();
+    });
+
+    // Обновление интерфейса при загрузке
+    window.addEventListener('DOMContentLoaded', () => {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            alert(`Добро пожаловать обратно, ${currentUser.username}!`);
+            updateUIForRole(currentUser.role);
+        } else {
+            const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+            authModal.show();
+        }
+
+        // Скрыть кнопку регистрации, если пользователь уже авторизован
+        const registerButton = document.getElementById('registerButton');
+        if (currentUser) {
+            registerButton.style.display = 'none';
+        } else {
+            registerButton.style.display = 'inline-block';
+        }
+    });
+
+    // Настройка интерфейса по роли
+    function updateUIForRole(role) {
+        console.log(`Настройка интерфейса для роли: ${role}`);
+        // Здесь добавьте логику отображения/скрытия элементов для конкретной роли
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container py-4">
+    <!-- Group Controls -->
+    <div class="d-flex justify-content-center align-items-center mb-3">
+        <button id="prev-group" class="btn btn-info me-2">⬅️ Группа</button>
+        <span id="group-label" class="fw-bold">Группа: 1</span>
+        <button id="next-group" class="btn btn-info ms-2">Группа ➡️</button>
+    </div>
+
+    <!-- Week and Day Controls -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center">
+            <button id="prev-week" class="btn btn-success me-2">⬅️ Неделя</button>
+            <span id="week-label" class="fw-bold">Неделя: 1</span>
+            <button id="next-week" class="btn btn-success ms-2">Неделя ➡️</button>
+        </div>
+        <div class="d-flex align-items-center">
+            <button id="prev-day" class="btn btn-primary me-2">⬅️ День</button>
+            <span id="day-label" class="fw-bold">День недели: 1 (Пн)</span>
+            <button id="next-day" class="btn btn-primary ms-2">День ➡️</button>
+        </div>
+    </div>
+
+    <!-- Schedule -->
+    <div id="schedule" class="list-group">
+        <!-- Расписание будет загружено динамически -->
+    </div>
+    <h5>Поиск по преподавателю:</h5>
+    <div class="input-group mb-3">
+        <input id="teacher-name" type="text" class="form-control" placeholder="Введите фамилию и инициалы преподавателя, например: Иванов И.И.">
+    </div>
+    <div class="mb-3">
+        <label for="week-filter" class="form-label">Недели (через запятую, например: 1,2,3):</label>
+        <input id="week-filter" type="text" class="form-control" placeholder="Оставьте пустым для всех недель">
+    </div>
+    <div class="mb-3">
+        <label for="day-filter" class="form-label">Дни недели (через запятую, например: 1,2,3):</label>
+        <input id="day-filter" type="text" class="form-control" placeholder="1 - понедельник, 2 - вторник...">
+    </div>
+    <button id="search-teacher" class="btn btn-secondary">Найти расписание</button>
+    <div id="teacher-schedule" class="mt-3">
+        <!-- Результаты поиска будут появляться здесь -->
+    </div>
+
+</div>
+
+<form id="customEventForm">
+    <label>Неделя: <input type="number" id="eventWeek" required></label>
+    <label>День: <input type="number" id="eventDay" required></label>
+    <label>Группа: <input type="number" id="eventGroup" required></label>
+    <label>Начало: <input type="time" id="eventStartTime" required></label>
+    <label>Конец: <input type="time" id="eventEndTime" required></label>
+    <label>Тип: <input type="text" id="eventType" required></label>
+    <button type="submit">Добавить</button>
+</form>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+<script>
+    // Обновление интерфейса по роли
+    function updateUIForRole(role) {
+        console.log(`Настройка интерфейса для роли: ${role}`);
+        const addEventForm = document.getElementById("customEventForm");
+        const editButtons = document.querySelectorAll(".edit");
+
+        // Доступ только для диспетчера
+        if (role === "dispatcher") {
+            addEventForm.style.display = "block"; // Показываем форму добавления
+            editButtons.forEach((btn) => btn.style.display = "inline-block"); // Показываем кнопки редактирования
+        } else {
+            addEventForm.style.display = "none"; // Скрываем форму добавления
+            editButtons.forEach((btn) => btn.style.display = "none"); // Скрываем кнопки редактирования
+        }
+    }
+
+    // Пример вызова функции после авторизации
+    document.getElementById("authForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        const user = users.find(user => user.username === username && user.password === password);
+        if (!user) {
+            alert("Неверное имя пользователя или пароль.");
+            return;
+        }
+
+        // Сохранение данных авторизации
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        alert(`Добро пожаловать, ${user.username}! Ваша роль: ${user.role}`);
+
+        // Закрытие модального окна
+        const authModal = bootstrap.Modal.getInstance(document.getElementById("authModal"));
+        authModal.hide();
+
+        updateUIForRole(user.role); // Обновление интерфейса
+    });
+
+    // Обновление интерфейса при загрузке страницы
+    window.addEventListener("DOMContentLoaded", () => {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (currentUser) {
+            alert(`Добро пожаловать обратно, ${currentUser.username}!`);
+            updateUIForRole(currentUser.role); // Обновление интерфейса
+        } else {
+            const authModal = new bootstrap.Modal(document.getElementById("authModal"));
+            authModal.show();
+        }
+    });
+</script>
+<script>
+    // Список подписчиков (учеников)
+    const students = [
+        { username: "student1", email: "student1@example.com" },
+        { username: "student2", email: "student2@example.com" },
+        { username: "student3", email: "student3@example.com" },
+    ];
+
+    // Функция уведомления учеников
+    function notifyStudents(group, week, day) {
+        const message = `Изменения в расписании для группы ${group} на неделе ${week}, день ${day}. Проверьте обновления.`;
+
+        // Для упрощения — вывод в alert
+        students.forEach(student => {
+            alert(`Уведомление для ${student.username}: ${message}`);
+        });
+
+        // Можно расширить функционал, например, отправкой писем через сервер
+        console.log("Уведомления отправлены:", message);
+    }
+
+    // Изменение расписания
+    function editScheduleEntry(slot, group, week, day) {
+        const newSubject = prompt('Введите новое название предмета:', slot.subject);
+        const newTeacher = prompt('Введите имя нового преподавателя:', slot.teacher);
+
+        if (newSubject) slot.subject = newSubject;
+        if (newTeacher) slot.teacher = newTeacher;
+
+        // Уведомляем учеников
+        notifyStudents(group, week, day);
+
+        updateSchedule(); // Перерисовываем расписание
+    }
+
+    // Пример вызова при редактировании
+    listItem.querySelector('.edit').addEventListener('click', () => {
+        editScheduleEntry(slot, group, week, day);
+    });
+</script>
+</body>
+</html>
