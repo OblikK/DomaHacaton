@@ -2,4 +2,11 @@
 
 При запуске приложения пользователя встречает экран регистрации, где можно ввести Логин, Email, Пароль. 
 
-<img src ="https://github.com/OblikK/Hackaton/blob/main/reg.png?raw=true" width = "300">
+<img src ="https://github.com/OblikK/Hackaton/blob/main/reg.png?raw=true" width = "200">
+
+При заполнении всех полей появляется всплывающая подсказка о регистрации.
+Далее данные о пользоваетеле отправляются в небольшую БД.
+В случае не заполнения всех/одного полей появится соответствующая подсказка.
+
+<img src ="https://github.com/OblikK/Hackaton/blob/main/auth.png?raw=true" width = "200">
+
